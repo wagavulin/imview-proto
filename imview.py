@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-from PySide6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets, QtGui
 from PySide6.QtUiTools import QUiLoader
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -12,6 +12,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loader = QUiLoader()
         self.window = self.loader.load("./mainwindow.ui", None)
         self.setCentralWidget(self.window)
+        self.pixmap = QtGui.QPixmap("./sample1.jpg")
+        self.window.label.setPixmap(self.pixmap)
 
 QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
 app = QtWidgets.QApplication(sys.argv)
