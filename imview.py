@@ -55,7 +55,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.statusBar().showMessage("Ready")
 
-        self.open_new_file("../sample-images/EOS100D-2024-resized/IMG_5535.JPG")
+        self.open_new_file("../sample-images/EOS100D-2024/IMG_5535.JPG")
 
         self.show()
 
@@ -70,8 +70,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.load_and_show_image(img_path)
 
     def load_and_show_image(self, img_path):
-        self.pixmap = QtGui.QPixmap(img_path)
+        pixmap_orig = QtGui.QPixmap(img_path)
+        self.pixmap = pixmap_orig.scaled(self.label.width(), self.label.height(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
         self.label.setPixmap(self.pixmap)
+        self.statusBar().showMessage(f"Showing {img_path}")
 
     def keyPressEvent(self, e):
         if e.key() == QtCore.Qt.Key_Right:
