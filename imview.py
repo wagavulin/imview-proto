@@ -29,6 +29,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.image_directory_navigator:ImageDirectoryNavigator|None = None
 
         super(MainWindow, self).__init__(parent)
+        self.setAcceptDrops(True)
         self.setWindowTitle("ImView")
 
         open_action = QtGui.QAction("&Open", self)
@@ -83,6 +84,20 @@ class MainWindow(QtWidgets.QMainWindow):
             self.image_directory_navigator.get_prev_img_path()
             self.load_and_show_image(self.image_directory_navigator.get_current_img_path())
         return super().keyPressEvent(e)
+
+    def dragEnterEvent(self, e:QtGui.QDragEnterEvent):
+        m:QtCore.QMimeData = e.mimeData()
+        if m.hasText():
+            e.accept()
+
+    def dropEvent(self, e:QtGui.QDropEvent):
+        img_path = e.mimeData().text()
+        if img_path.startswith("file:///"):
+            img_path = img_path[8:]
+        if os.path.isfile(img_path):
+            self.open_new_file(img_path)
+        else:
+            self.statusBar().showMessage(f"Invalid file: {img_path}")
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication()
