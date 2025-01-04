@@ -31,6 +31,8 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__(parent)
         self.setAcceptDrops(True)
         self.setWindowTitle("ImView")
+        self.pixmap_orig:QtGui.QPixmap|None = None
+        self.last_resize_time:QtCore.QTime = QtCore.QTime.currentTime()
 
         open_action = QtGui.QAction("&Open", self)
         open_action.setShortcut("Ctrl+O")
@@ -52,6 +54,7 @@ class MainWindow(QtWidgets.QMainWindow):
         central_widget.setLayout(vertical_layout)
         self.setCentralWidget(central_widget)
         self.label = QtWidgets.QLabel("Open from File->Open or drag and drop an image file here")
+        self.label.setMinimumSize(40, 40)
         vertical_layout.addWidget(self.label)
 
         self.statusBar().showMessage("Ready")
@@ -71,9 +74,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.load_and_show_image(img_path)
 
     def load_and_show_image(self, img_path):
-        pixmap_orig = QtGui.QPixmap(img_path)
-        self.pixmap = pixmap_orig.scaled(self.label.width(), self.label.height(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
-        self.label.setPixmap(self.pixmap)
+        self.pixmap_orig = QtGui.QPixmap(img_path)
+        self.show_resized_image()
         img_fname = os.path.split(img_path)[1]
         self.setWindowTitle(f"ImView - {img_fname}")
 
@@ -90,6 +92,7 @@ class MainWindow(QtWidgets.QMainWindow):
         m:QtCore.QMimeData = e.mimeData()
         if m.hasText():
             e.accept()
+        return super().dragEnterEvent(e)
 
     def dropEvent(self, e:QtGui.QDropEvent):
         img_path = e.mimeData().text()
@@ -99,6 +102,18 @@ class MainWindow(QtWidgets.QMainWindow):
             self.open_new_file(img_path)
         else:
             self.statusBar().showMessage(f"Invalid file: {img_path}")
+        return super().dropEvent(e)
+
+    def resizeEvent(self, e:QtGui.QResizeEvent):
+        if self.pixmap_orig:
+            if self.last_resize_time.msecsTo(QtCore.QTime.currentTime()) > 100:
+                self.show_resized_image()
+                self.last_resize_time = QtCore.QTime.currentTime()
+        return super().resizeEvent(e)
+
+    def show_resized_image(self):
+        self.pixmap = self.pixmap_orig.scaled(self.label.width(), self.label.height(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
+        self.label.setPixmap(self.pixmap)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication()
