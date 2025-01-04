@@ -74,7 +74,8 @@ class MainWindow(QtWidgets.QMainWindow):
         pixmap_orig = QtGui.QPixmap(img_path)
         self.pixmap = pixmap_orig.scaled(self.label.width(), self.label.height(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
         self.label.setPixmap(self.pixmap)
-        self.statusBar().showMessage(f"Showing {img_path}")
+        img_fname = os.path.split(img_path)[1]
+        self.setWindowTitle(f"ImView - {img_fname}")
 
     def keyPressEvent(self, e):
         if e.key() == QtCore.Qt.Key_Right:
