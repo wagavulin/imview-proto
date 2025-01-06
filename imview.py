@@ -54,6 +54,7 @@ class MainWindow(QtWidgets.QMainWindow):
         central_widget.setLayout(vertical_layout)
         self.setCentralWidget(central_widget)
         self.label = QtWidgets.QLabel("Open from File->Open or drag and drop an image file here")
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setMinimumSize(40, 40)
         vertical_layout.addWidget(self.label)
 
