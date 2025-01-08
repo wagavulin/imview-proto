@@ -7,7 +7,12 @@ from PySide6 import QtCore, QtGui, QtWidgets
 class ImageDirectoryNavigator:
     def __init__(self, img_dir, initial_fname:str|None=None):
         self.img_dir = img_dir
-        self.img_paths = sorted(list(glob.glob(os.path.join(img_dir, "*.JPG"))))
+        img_paths = []
+        for e in glob.glob(os.path.join(img_dir, "*")):
+            ext = os.path.splitext(e)[1].lower()
+            if ext in [".jpg", ".jpeg", ".png", ".bmp", ".gif"]:
+                img_paths.append(e)
+        self.img_paths = img_paths
         if initial_fname:
             self.current_img_idx = self.img_paths.index(os.path.join(img_dir, initial_fname))
         else:
