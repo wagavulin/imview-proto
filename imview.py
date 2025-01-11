@@ -38,6 +38,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle("ImView")
         self.pixmap_orig:QtGui.QPixmap|None = None
         self.last_resize_time:QtCore.QTime = QtCore.QTime.currentTime()
+        self.current_img_path:str|None = None
 
         open_action = QtGui.QAction("&Open", self)
         open_action.setShortcut("Ctrl+O")
@@ -54,6 +55,13 @@ class MainWindow(QtWidgets.QMainWindow):
         file_menu.addAction(open_action)
         file_menu.addAction(exit_action)
 
+        copy_img_path_action = QtGui.QAction("Copy image path", self)
+        copy_img_path_action.setStatusTip("Copy image path to clipboard")
+        copy_img_path_action.triggered.connect(self.copy_img_path)
+
+        edit_menu = menu_bar.addMenu("&Edit")
+        edit_menu.addAction(copy_img_path_action)
+
         vertical_layout = QtWidgets.QVBoxLayout()
         central_widget = QtWidgets.QWidget()
         central_widget.setLayout(vertical_layout)
@@ -65,7 +73,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.statusBar().showMessage("Ready")
 
-        self.open_new_file("../sample-images/EOS100D-2024/IMG_5535.JPG")
+        self.open_new_file("../sample-images/horse.jpg")
 
         self.show()
 
@@ -82,7 +90,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def load_and_show_image(self, img_path):
         self.pixmap_orig = QtGui.QPixmap(img_path)
         self.show_resized_image()
-        img_fname = os.path.split(img_path)[1]
+        self.current_img_path = img_path
+        img_fname = os.path.split(self.current_img_path)[1]
         self.setWindowTitle(f"ImView - {img_fname}")
 
     def keyPressEvent(self, e):
@@ -120,6 +129,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def show_resized_image(self):
         self.pixmap = self.pixmap_orig.scaled(self.label.width(), self.label.height(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
         self.label.setPixmap(self.pixmap)
+
+    def copy_img_path(self):
+        abs_path = QtCore.QFileInfo(self.current_img_path).absoluteFilePath()
+        cb = QtWidgets.QApplication.clipboard()
+        cb.setText(abs_path)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication()
