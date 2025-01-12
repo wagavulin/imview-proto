@@ -58,9 +58,13 @@ class MainWindow(QtWidgets.QMainWindow):
         copy_img_path_action = QtGui.QAction("Copy image path", self)
         copy_img_path_action.setStatusTip("Copy image path to clipboard")
         copy_img_path_action.triggered.connect(self.copy_img_path)
+        copy_img_fname_action = QtGui.QAction("Copy image filename", self)
+        copy_img_fname_action.setStatusTip("Copy image filename to clipboard")
+        copy_img_fname_action.triggered.connect(self.copy_img_fname)
 
         edit_menu = menu_bar.addMenu("&Edit")
         edit_menu.addAction(copy_img_path_action)
+        edit_menu.addAction(copy_img_fname_action)
 
         vertical_layout = QtWidgets.QVBoxLayout()
         central_widget = QtWidgets.QWidget()
@@ -134,6 +138,11 @@ class MainWindow(QtWidgets.QMainWindow):
         abs_path = QtCore.QFileInfo(self.current_img_path).absoluteFilePath()
         cb = QtWidgets.QApplication.clipboard()
         cb.setText(abs_path)
+
+    def copy_img_fname(self):
+        fname = QtCore.QFileInfo(self.current_img_path).fileName()
+        cb = QtWidgets.QApplication.clipboard()
+        cb.setText(fname)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication()
