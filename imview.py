@@ -21,12 +21,18 @@ class ImageDirectoryNavigator:
     def get_current_img_path(self):
         return self.img_paths[self.current_img_idx]
 
-    def get_next_img_path(self):
-        self.current_img_idx = (self.current_img_idx + 1) % len(self.img_paths)
+    def get_next_img_path(self) -> str|None:
+        if self.current_img_idx == len(self.img_paths) - 1:
+            return None
+        else:
+            self.current_img_idx += 1            
         return self.get_current_img_path()
 
     def get_prev_img_path(self):
-        self.current_img_idx = (self.current_img_idx - 1) % len(self.img_paths)
+        if self.current_img_idx == 0:
+            return None
+        else:
+            self.current_img_idx -= 1
         return self.get_current_img_path()
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -100,11 +106,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def keyPressEvent(self, e):
         if e.key() == QtCore.Qt.Key_Right:
-            self.image_directory_navigator.get_next_img_path()
-            self.load_and_show_image(self.image_directory_navigator.get_current_img_path())
+            if self.image_directory_navigator.get_next_img_path():
+                self.load_and_show_image(self.image_directory_navigator.get_current_img_path())
+            else:
+                self.statusBar().showMessage("No more images")
         elif e.key() == QtCore.Qt.Key_Left:
-            self.image_directory_navigator.get_prev_img_path()
-            self.load_and_show_image(self.image_directory_navigator.get_current_img_path())
+            if self.image_directory_navigator.get_prev_img_path():
+                self.load_and_show_image(self.image_directory_navigator.get_current_img_path())
+            else:
+                self.statusBar().showMessage("No previous images")
         return super().keyPressEvent(e)
 
     def dragEnterEvent(self, e:QtGui.QDragEnterEvent):
